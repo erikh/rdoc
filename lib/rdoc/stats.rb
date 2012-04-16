@@ -20,10 +20,20 @@ class RDoc::Stats
   attr_reader :num_files
 
   ##
+  # Verbosity of output, 0 for quiet, 1 for normal, > 1 for verbose.
+
+  attr_reader :verbosity
+
+  ##
+  # The display device we're outputting to.
+
+  attr_reader :display
+
+  ##
   # Creates a new Stats that will have +num_files+.  +verbosity+ defaults to 1
   # which will create an RDoc::Stats::Normal outputter.
 
-  def initialize num_files, verbosity = 1
+  def initialize num_files, verbosity = 1, display = TTY
     @files_so_far = 0
     @num_files = num_files
 
@@ -35,39 +45,41 @@ class RDoc::Stats
     @start = Time.now
     @undoc_params = 0
 
-    @display = case verbosity
-               when 0 then Quiet.new   num_files
-               when 1 then Normal.new  num_files
-               else        Verbose.new num_files
-               end
+    @display   = display
+    @verbosity = verbosity
+    @output    = case @verbosity
+                 when 0 then @display::Quiet.new   num_files
+                 when 1 then @display::Normal.new  num_files
+                 else        @display::Verbose.new num_files
+                 end
   end
 
   ##
   # Records the parsing of an alias +as+.
 
   def add_alias as
-    @display.print_alias as
+    @output.print_alias as
   end
 
   ##
   # Records the parsing of an attribute +attribute+
 
   def add_attribute attribute
-    @display.print_attribute attribute
+    @output.print_attribute attribute
   end
 
   ##
   # Records the parsing of a class +klass+
 
   def add_class klass
-    @display.print_class klass
+    @output.print_class klass
   end
 
   ##
   # Records the parsing of +constant+
 
   def add_constant constant
-    @display.print_constant constant
+    @output.print_constant constant
   end
 
   ##
@@ -75,28 +87,28 @@ class RDoc::Stats
 
   def add_file(file)
     @files_so_far += 1
-    @display.print_file @files_so_far, file
+    @output.print_file @files_so_far, file
   end
 
   ##
   # Records the parsing of +method+
 
   def add_method(method)
-    @display.print_method method
+    @output.print_method method
   end
 
   ##
   # Records the parsing of a module +mod+
 
   def add_module(mod)
-    @display.print_module mod
+    @output.print_module mod
   end
 
   ##
   # Call this to mark the beginning of parsing for display purposes
 
   def begin_adding
-    @display.begin_adding
+    @output.begin_adding
   end
 
   ##
@@ -166,7 +178,7 @@ class RDoc::Stats
   # Call this to mark the end of parsing for display purposes
 
   def done_adding
-    @display.done_adding
+    @output.done_adding
   end
 
   ##
@@ -428,9 +440,8 @@ class RDoc::Stats
     [params.length, undoc]
   end
 
-  autoload :Quiet,   'rdoc/stats/quiet'
-  autoload :Normal,  'rdoc/stats/normal'
-  autoload :Verbose, 'rdoc/stats/verbose'
-
+  autoload :TTY, 'rdoc/stats/tty'
+  # FIXME finish
+  #autoload :HTML, 'rdoc/stats/html'
 end
 

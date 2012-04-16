@@ -2,7 +2,7 @@
 # Stats printer that prints everything documented, including the documented
 # status
 
-class RDoc::Stats::Verbose < RDoc::Stats::Normal
+class RDoc::Stats::TTY::Verbose < RDoc::Stats::TTY::Normal
 
   ##
   # Returns a marker for RDoc::CodeObject +co+ being undocumented

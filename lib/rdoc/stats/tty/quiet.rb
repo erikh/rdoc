@@ -1,7 +1,7 @@
 ##
 # Stats printer that prints nothing
 
-class RDoc::Stats::Quiet
+class RDoc::Stats::TTY::Quiet
 
   ##
   # Creates a new Quiet that will print nothing

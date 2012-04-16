@@ -2,7 +2,7 @@
 # Stats printer that prints just the files being documented with a progress
 # bar
 
-class RDoc::Stats::Normal < RDoc::Stats::Quiet
+class RDoc::Stats::TTY::Normal < RDoc::Stats::TTY::Quiet
 
   def begin_adding # :nodoc:
     puts "Parsing sources..." if $stdout.tty?
